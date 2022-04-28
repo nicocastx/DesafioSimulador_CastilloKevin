@@ -1,17 +1,21 @@
 alert("Buenas!, bienvenido a simulador de tienda Steam")
 alert("Usted podra hacer compra de unos 10 juegos distintos de steam, pasar los precios de dolares a pesos y sumarles impuestos, ademas, podra sumar credito a su billetera virtual\n",
     "Ademas ahora, podra hacer uso de un carrito para sus compras")
+
+//Inicializacion de variables
 let opcion = 1;
 const cambioDolar = 200;
 const impuestaso = 1.69;
 let saldo = 0.0;
+
+//creacion de clases
 class Juego {
     constructor(nombre, precio) {
         this.nombre = nombre;
         this.precio = precio;
     };
     toString() {
-        return this.nombre + "   USD$" + this.precio;
+        return this.nombre + "\tUSD$" + this.precio;
     };
     precioPesos() {
         return this.precio * cambioDolar;
@@ -21,6 +25,8 @@ class Juego {
     }
 }
 
+
+//Creacion de funciones
 function masSaldo(saldo) {
     let credito = parseInt(prompt("Ingrese el credito que desea agregar a su billetera"))
     return saldo = saldo + credito
@@ -41,12 +47,23 @@ function comprarJuegos(saldo, total, carrito) {
 
 function verCarrito(carrito) {
     let carritoString = "";
+    if (carrito.length === 0) {
+        return "Su carrito esta vacio";
+    }
     for (const Juegos of carrito) {
-        carritoString += Juegos.toString() + "\n";
+        let cantidad = 0;
+        for (let i = 0; i < carrito.length; i++) {
+            if (Juegos.nombre === lista[i].nombre) {
+                cantidad++;
+            }
+        }
+        carritoString += Juegos.toString() + "\t" + cantidad + "\n";
     }
     return carritoString;
 }
 
+
+// Creacion de objetos
 let j1 = new Juego("Among Us", 2.00);
 let j2 = new Juego("ARK", 4.00);
 let j3 = new Juego("Wallpaper Engine", 6.00);
@@ -60,32 +77,45 @@ let j10 = new Juego("Bioshock Infinite", 20.0);
 const lista = [j1, j2, j3, j4, j5, j6, j7, j8, j9, j10];
 const carrito = [];
 
+//Menu
 while (opcion > 1 || opcion < 3) {
     alert("Bievenido! Su saldo actual es de ARS$" + saldo);
     opcion = prompt("Ingrese su opcion:\n1.Para manejar el saldo\n2.Para ver/comprar los juegos\n3.Para salir del simulador");
-    if (saldo == NaN) {
+    //Caso que el saldo se haya bugeado, se reiniciara a 0
+    if (isNaN(saldo)) {
         saldo = 0;
         alert("Ocurrio un error con su saldo, por lo que fue reiniciado a 0");
     }
+    // 1.Para manejar el saldo
     if (opcion == 1) {
         let opcionS = 1;
         while (opcionS > 0 || opcionS < 4) {
             opcionS = parseInt(prompt("Usted eligio manejar su saldo, Ingrese el tipo de operacion que desea realizar\n" +
                 "1. Agregar credito\n2. Ver saldo actual\n3. Ver mi saldo en dolares\n4. Salir del menu Saldo"));
+            // 1. Agregar credito
             if (opcionS == 1) {
                 saldo = masSaldo(saldo);
                 alert("Exito! Su saldo actual es de ARS$" + saldo);
-            } else if (opcionS == 2) {
+            }
+            // 2. Ver saldo actual
+            else if (opcionS == 2) {
                 alert("Su saldo actual es de ARS$" + saldo);
-            } else if (opcionS == 3) {
+            }
+            // 3. Ver mi saldo en dolares
+            else if (opcionS == 3) {
                 alert("Su saldo en dolares es de US$" + (saldo / cambioDolar));
-            } else if (opcionS == 4) {
+            }
+            // 4. Salir del menu Saldo
+            else if (opcionS == 4) {
                 alert("Volviendo al menu anterior...");
                 break;
-            } else {
+            }
+            // Verificacion de opcion de menu saldo
+            else {
                 alert("Ingrese una opcion valida!");
             }
         }
+        // 2.Para ver/comprar los juegos
     } else if (opcion == 2) {
         let opcionJ = 1;
         let juego = 0;
@@ -93,6 +123,7 @@ while (opcion > 1 || opcion < 3) {
         while (opcionJ > 1 || opcionJ < 10) {
             opcionJ = parseInt(prompt("Usted eligio pasar a comprar los juegos, Ingrese el tipo de operacion que desea realizar\n" +
                 "1. Elegir un juego de la lista de Juegos\n2. Agregar juego elegido al carrito\n3. Quitar ultimo juego del carrito\n4.Realizar mi compra\n5. Ver mi carrito\n6. Salir del menu de Juegos"));
+            // 1. Elegir un juego de la lista de Juegos
             if (opcionJ == 1) {
                 let listajuegos = "";
                 for (const Juego of lista) {
@@ -110,12 +141,14 @@ while (opcion > 1 || opcion < 3) {
                     alert("Volviendo al menu anterior...");
                     break;
                 } else {
-                    if(lista[juego - 1] != undefined){
-                    alert("Usted eligio: " + lista[juego - 1].nombre);
-                    eleccion = juego;
+                    if (lista[juego - 1] != undefined) {
+                        alert("Usted eligio: " + lista[juego - 1].nombre);
+                        eleccion = juego;
                     }
                 };
-            } else if (opcionJ == 2) {
+            }
+            // 2. Agregar juego elegido al carrito
+            else if (opcionJ == 2) {
                 if (eleccion != 0) {
                     carrito.push(lista[juego - 1]);
                     alert("Juego agregado al carrito!");
@@ -123,43 +156,57 @@ while (opcion > 1 || opcion < 3) {
                 } else {
                     alert("ERROR! Aun no eligio un juego para el carrito!");
                 }
-            } else if (opcionJ == 3) {
+            }
+            // 3. Quitar ultimo juego del carrito
+            else if (opcionJ == 3) {
                 if (carrito.length > 0) {
-                alert("Juego '" + carrito[carrito.length - 1].nombre +"' eliminado del carrito!");
-                carrito.pop();
+                    alert("Juego '" + carrito[carrito.length - 1].nombre + "' eliminado del carrito!");
+                    carrito.pop();
                 } else {
                     alert("ERROR! No hay juegos en el carrito!");
                 }
-            } else if (opcionJ == 4) {
+            }
+            // 4.Realizar mi compra
+            else if (opcionJ == 4) {
                 let totalC = 0;
                 for (const Juego of carrito) {
                     totalC += Juego.precioImpuesto();
                 }
                 let seguro = confirm("Esta seguro que desea realizar su compra? Comprara: \n" +
-                    verCarrito(carrito) + 
-                    "El total sera de: ARS$" + totalC + "\nEl precio incluye impuestos");
+                    verCarrito(carrito) +
+                    "\nEl total sera de: ARS$" + totalC + "\nEl precio incluye impuestos");
                 if (seguro) {
                     if (carrito.length > 0) {
-                    saldo = comprarJuegos(saldo, totalC, carrito);
+                        saldo = comprarJuegos(saldo, totalC, carrito);
                     } else {
                         alert("ERROR! No hay juegos en el carrito!");
                     }
-                } else{
+                } else {
                     alert("Compra cancelada!");
                 }
-            }else if(opcionJ == 5){
+            }
+            // 5. Ver mi carrito
+            else if (opcionJ == 5) {
                 alert("Su carrito actual es: \n" + verCarrito(carrito));
-            } else if (opcionJ == 6) {
+            }
+            // 6. Salir del menu de Juegos
+            else if (opcionJ == 6) {
                 alert("Volviendo al menu anterior...");
                 break;
-            } else {
+            }
+            // Verificacion de opcion de menu de juegos
+            else {
                 alert("Opcion no valida")
             }
         }
-    } else if (opcion == 3) {
+    }
+    // 3. Para salir del simulador
+    else if (opcion == 3) {
         alert("Gracias por utilizar el simulador de tienda Steam, hasta la proxima!");
         break;
-    } else {
+    }
+    // Verificacion de opcion de menu general
+    else {
         alert("Opcion no valida")
     }
 }
