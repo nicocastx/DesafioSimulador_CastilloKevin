@@ -50,14 +50,16 @@ function verCarrito(carrito) {
     if (carrito.length === 0) {
         return "Su carrito esta vacio";
     }
-    for (const Juegos of carrito) {
+    for (let i = 0; i < lista.length; i++) {
         let cantidad = 0;
-        for (let i = 0; i < carrito.length; i++) {
-            if (Juegos.nombre === lista[i].nombre) {
+        for (let j = 0; j < carrito.length; j++){
+            if (carrito[j].nombre === lista[i].nombre) {
                 cantidad++;
             }
         }
-        carritoString += Juegos.toString() + "\t" + cantidad + "\n";
+        if (cantidad > 0){
+        carritoString += lista[i].toString() + "\t" + cantidad + "\n";
+        }
     }
     return carritoString;
 }
