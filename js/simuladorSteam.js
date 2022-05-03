@@ -7,6 +7,11 @@ let opcion = 1;
 const cambioDolar = 200;
 const impuestaso = 1.69;
 let saldo = 0.0;
+let nroOrden = 0;
+
+//Inicializacion de DOM's
+let carritoContainer = document.getElementById("carritoContainer");
+
 
 //creacion de clases
 class Juego {
@@ -36,6 +41,14 @@ function comprarJuegos(saldo, total, carrito) {
     total = saldo - total;
     if (total >= 0) {
         alert("Exito! Su saldo actual es de ARS$" + total);
+        carrito.forEach(juegoCarrito => {
+            carritoContainer.innerHTML += `<div class = "itemCarrito">
+                <h3>${juegoCarrito.nombre}</h3> 
+                <h4>Precio: ARS$${juegoCarrito.precioImpuesto()}</h4>
+                <p>Nro de orden: ${nroOrden += 1}</p>
+            </div>
+            `;
+        });
         carrito.splice(0, carrito.length)
         alert("Su carrito se ha vaciado completamente!");
         return total;
@@ -52,13 +65,13 @@ function verCarrito(carrito) {
     }
     for (let i = 0; i < lista.length; i++) {
         let cantidad = 0;
-        for (let j = 0; j < carrito.length; j++){
+        for (let j = 0; j < carrito.length; j++) {
             if (carrito[j].nombre === lista[i].nombre) {
                 cantidad++;
             }
         }
-        if (cantidad > 0){
-        carritoString += lista[i].toString() + "\t" + cantidad + "\n";
+        if (cantidad > 0) {
+            carritoString += lista[i].toString() + "\t" + cantidad + "\n";
         }
     }
     return carritoString;
@@ -212,3 +225,5 @@ while (opcion > 1 || opcion < 3) {
         alert("Opcion no valida")
     }
 }
+
+// Creacion de HTML del carrito
