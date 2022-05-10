@@ -19,7 +19,7 @@ let text = document.getElementById("text");
 inspire.addEventListener("click", () =>{
     let random = Math.floor(Math.random() * frasesInteresantes.length);
     frasesInteresantes[random];
-    text.innerHTML = frasesInteresantes[random];
+    text.innerHTML = `" ${frasesInteresantes[random]} "`;
 });
 
 motive.addEventListener("click", () =>{
