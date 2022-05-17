@@ -12,9 +12,6 @@ class Juego {
         this.nombre = nombre;
         this.precio = precio;
     };
-    toString() {
-        return this.nombre + "\tUSD$" + this.precio;
-    };
     precioPesos() {
         return this.precio * cambioDolar;
     }
@@ -37,7 +34,11 @@ let j10 = new Juego(10, "Bioshock Infinite", 20.0);
 let j11 = new Juego(11, "Total War: Warhammer 3", 22.0);
 let j12 = new Juego(12, "Mount and Blade: Bannerlord", 24.0);
 const listaJuegos = [j1, j2, j3, j4, j5, j6, j7, j8, j9, j10, j11, j12];
-const carrito = [];
+let carrito = [];
+if(localStorage.getItem("carrito") != null){
+    carrito = JSON.parse(localStorage.getItem("carrito"));
+}
+
 
 //Utilizacion de objetos de HTML
 let bienvenida = document.getElementById("welcome");
@@ -46,15 +47,27 @@ let containerJuegos = document.getElementById("containerJuegos");
 let buscadorJuegos = document.getElementById("buscadorJuegos");
 let carritoFormat = document.getElementById("carritoFormat");
 let resetCarrito = document.getElementById("resetCarrito");
+let totalContainer = document.getElementById("totalContainer");
 
 // Inicio
 formatoJuego(listaJuegos);
+leerCarrito();
+
+if (localStorage.getItem("usuario") == null) {
+    username.innerHTML = `<div class="mb-3">
+    <label for="usuario" class="form-label">Ingrese su nombre de usuario</label>
+    <input type="text" class="form-control" id="usuario" aria-describedby="usernameHelp">
+</div>
+<button type="submit" class="btn btn-primary">Saludame</button>`
+} else{
+    welcome.innerHTML = '<h2 class="userInput">Bienvenido, ' + localStorage.getItem("usuario") + '!</h2>';
+}
 
 username.addEventListener('submit', (e) => {
     e.preventDefault();
     let usuario = document.getElementById("usuario").value;
-    welcome.innerHTML = '<h2 class="userInput">Bienvenido, ' + usuario + '!</h2>';
-    nombreusuario = usuario;
+    localStorage.setItem("usuario", usuario);
+    welcome.innerHTML = '<h2 class="userInput">Bienvenido, ' + localStorage.getItem("usuario") + '!</h2>';
 })
 
 buscadorJuegos.addEventListener('input', () => {
@@ -66,23 +79,34 @@ buscadorJuegos.addEventListener('input', () => {
 
 //agregar juegos al carrito
 listaJuegos.forEach(juego => {
-    document.getElementById(`btnprod${juego.id}`).addEventListener('click', () => {
+    document.getElementById(`btnprod${juego.id}`).addEventListener('click', (e) => {
+        e.preventDefault();
         agregarCarrito(juego);
+        actualizarTotal()
     });
 });
 
-carrito.forEach(juego => {
-    document.getElementById(`btnborrar${juego.id}`).addEventListener('click', () => {
-        carrito = carrito.filter(juegoCarrito => juegoCarrito.id !== juego.id);
-        document.getElementById(`juego${juego.id}`).remove();
-        console.log(carrito);
+//borrar un juego del carrito
+function btnsborrar() {
+    carrito.forEach(juego => {
+        document.getElementById(`btnborrar${juego.id}`).addEventListener('click', () => {
+            carrito = carrito.filter(juegoCarrito => juegoCarrito.id != juego.id);
+            document.getElementById(`carrito${juego.id}`).remove();
+            localStorage.setItem("carrito", JSON.stringify(carrito));
+            actualizarTotal();
+        })
     })
-})
+}
 
 resetCarrito.addEventListener('click', () => {
-    carritoFormat.innerHTML = "";
     carrito.length = 0;
+    localStorage.removeItem("carrito", JSON.stringify(carrito));
+    carritoFormat.innerHTML = "";
+    totalContainer.innerHTML = `<h3>Total a pagar:</h3>`
 })
+
+totalContainer.innerHTML = `<h3>Total a pagar:</h3>`
+
 
 //Funciones
 
@@ -100,46 +124,47 @@ function formatoJuego(lista) {
 }
 
 function agregarCarrito(juego) {
-    console.log(carrito);
     if (!(carrito.includes(juego))) {
-        carritoFormat.innerHTML += `<div id="carrito${juego.id}" class="row mb-4 d-flex justify-content-between align-items-center">
-                            <div class="col-md-2 col-lg-2 col-xl-2">
-                                <img src="https://random.imagecdn.app/500/150"
-                                    class="img-fluid rounded-3" alt="Juego${juego.id}">
-                            </div>
-                            <div class="col-md-3 col-lg-3 col-xl-3">
-                                <h6 class="text-muted">${juego.nombre}</h6>
-                            </div>
-                            <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                                <input id="form${juego.id}" min="0" name="quantity" value="${cantidadEnCarrito(juego)}" type="text"
-                                    class="form-control form-control-sm" />
-                            </div>
-                            <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                                <h6 class="mb-0">USD$${juego.precio}</h6>
-                            </div>
-                            <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                                <button id="btnborrar${juego.id}" class="text-muted"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>`;
-        console.log(cantidadEnCarrito(juego))
-    }
-    carrito.push(juego);
-}
-
-function cantidadEnCarrito(juego) {
-    if (document.getElementById(`form${juego.id}`) != null) {
-        if (carrito.filter(juegoCarrito => juegoCarrito.id === juego.id).length == undefined) {
-            document.getElementById(`form${juego.id}`).value = 1; 
-        } else {
-            document.getElementById(`form${juego.id}`).value = carrito.filter(juegoCarrito => juegoCarrito.id === juego.id).length;
-        }
+        carrito.push(juego);
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        leerCarrito();
+    } else {
+        alert("El juego ya esta en el carrito");
     }
 }
 
-//Arranque
+function actualizarTotal(){
+    let total = 0;
 
-/* 
-Ingresar objetos a una lista traidos desde un form let objeto = {atrib1: valor, atrib2: valor2}
-array.push(objeto)
-reiniciar los campos de un form: form.reset();
-*/
+    JSON.parse(localStorage.getItem("carrito")).forEach(juego => {
+        total += juego.precio;
+    });
+    let totalPesos = total * 200;
+    let totalImpuesto = totalPesos * impuestaso;
+    totalContainer.innerHTML = `<h3>Total a pagar:</h3>`
+    totalContainer.innerHTML += `<h4>Total en dolares: USD$${total}</h4>`
+    totalContainer.innerHTML += `<h4>Total en pesos: ARG$${totalPesos}</h4>`
+    totalContainer.innerHTML += `<h4>Total en pesos con impuesto: ARG$${totalImpuesto}</h4>`
+};
+
+function leerCarrito(){
+    carritoFormat.innerHTML = "";
+        JSON.parse(localStorage.getItem("carrito")).forEach(juego => {
+            carritoFormat.innerHTML += `<div id="carrito${juego.id}" class="row mb-4 d-flex justify-content-between align-items-center">
+                                    <div class="col-md-2 col-lg-2 col-xl-2">
+                                        <img src="https://random.imagecdn.app/500/150"
+                                            class="img-fluid rounded-3" alt="Juego${juego.id}">
+                                    </div>
+                                    <div class="col-md-3 col-lg-3 col-xl-3">
+                                        <h6 class="text-muted">${juego.nombre}</h6>
+                                    </div>
+                                    <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                                        <h6 class="mb-0">USD$${juego.precio}</h6>
+                                    </div>
+                                    <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+                                        <button id="btnborrar${juego.id}" class="text-muted"><i class="fas fa-times"></i></button>
+                                    </div>
+                                </div>`;
+        })
+        btnsborrar();
+}
