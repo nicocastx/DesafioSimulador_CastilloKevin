@@ -1,7 +1,3 @@
-alert("Buenas!, bienvenido a simulador de tienda Steam")
-alert("Usted podra hacer compra de unos 10 juegos distintos de steam, pasar los precios de dolares a pesos y sumarles impuestos, ademas, podra sumar credito a su billetera virtual\n",
-    "Ademas ahora, podra hacer uso de un carrito para sus compras")
-
 //Inicializacion de variables
 let opcion = 1;
 const cambioDolar = 200;
@@ -9,13 +5,10 @@ const impuestaso = 1.69;
 let saldo = 0.0;
 let nroOrden = 0;
 
-//Inicializacion de DOM's
-let carritoContainer = document.getElementById("carritoContainer");
-
-
 //creacion de clases
 class Juego {
-    constructor(nombre, precio) {
+    constructor(id, nombre, precio) {
+        this.id = id;
         this.nombre = nombre;
         this.precio = precio;
     };
@@ -30,200 +23,123 @@ class Juego {
     }
 }
 
-
-//Creacion de funciones
-function masSaldo(saldo) {
-    let credito = parseInt(prompt("Ingrese el credito que desea agregar a su billetera"))
-    return saldo = saldo + credito
-}
-
-function comprarJuegos(saldo, total, carrito) {
-    total = saldo - total;
-    if (total >= 0) {
-        alert("Exito! Su saldo actual es de ARS$" + total);
-        carrito.forEach(juegoCarrito => {
-            carritoContainer.innerHTML += `<div class = "itemCarrito">
-                <h3>${juegoCarrito.nombre}</h3> 
-                <h4>Precio: ARS$${juegoCarrito.precioImpuesto()}</h4>
-                <p>Nro de orden: ${nroOrden += 1}</p>
-            </div>
-            `;
-        });
-        carrito.splice(0, carrito.length)
-        alert("Su carrito se ha vaciado completamente!");
-        return total;
-    } else {
-        alert("ERROR! Su saldo actual es de ARS$" + saldo);
-        return saldo;
-    }
-}
-
-function verCarrito(carrito) {
-    let carritoString = "";
-    if (carrito.length === 0) {
-        return "Su carrito esta vacio";
-    }
-    for (let i = 0; i < lista.length; i++) {
-        let cantidad = 0;
-        for (let j = 0; j < carrito.length; j++) {
-            if (carrito[j].nombre === lista[i].nombre) {
-                cantidad++;
-            }
-        }
-        if (cantidad > 0) {
-            carritoString += lista[i].toString() + "\t" + cantidad + "\n";
-        }
-    }
-    return carritoString;
-}
-
-
 // Creacion de objetos
-let j1 = new Juego("Among Us", 2.00);
-let j2 = new Juego("ARK", 4.00);
-let j3 = new Juego("Wallpaper Engine", 6.00);
-let j4 = new Juego("Borderlands 2", 8.00);
-let j5 = new Juego("Dont Starve: Together", 10.00);
-let j6 = new Juego("Cities: Skyline", 12.0);
-let j7 = new Juego("Civilization: VI", 14.0);
-let j8 = new Juego("Human Fall Flat", 16.0);
-let j9 = new Juego("Sekiro: Shadow Die Twice", 18.0);
-let j10 = new Juego("Bioshock Infinite", 20.0);
-const lista = [j1, j2, j3, j4, j5, j6, j7, j8, j9, j10];
+let j1 = new Juego(1, "Among Us", 2.00);
+let j2 = new Juego(2, "ARK", 4.00);
+let j3 = new Juego(3, "Wallpaper Engine", 6.00);
+let j4 = new Juego(4, "Borderlands 2", 8.00);
+let j5 = new Juego(5, "Dont Starve: Together", 10.00);
+let j6 = new Juego(6, "Cities: Skyline", 12.0);
+let j7 = new Juego(7, "Civilization: VI", 14.0);
+let j8 = new Juego(8, "Human Fall Flat", 16.0);
+let j9 = new Juego(9, "Sekiro: Shadow Die Twice", 18.0);
+let j10 = new Juego(10, "Bioshock Infinite", 20.0);
+let j11 = new Juego(11, "Total War: Warhammer 3", 22.0);
+let j12 = new Juego(12, "Mount and Blade: Bannerlord", 24.0);
+const listaJuegos = [j1, j2, j3, j4, j5, j6, j7, j8, j9, j10, j11, j12];
 const carrito = [];
 
-//Menu
-while (opcion > 1 || opcion < 3) {
-    alert("Bievenido! Su saldo actual es de ARS$" + saldo);
-    opcion = prompt("Ingrese su opcion:\n1.Para manejar el saldo\n2.Para ver/comprar los juegos\n3.Para salir del simulador");
-    //Caso que el saldo se haya bugeado, se reiniciara a 0
-    if (isNaN(saldo)) {
-        saldo = 0;
-        alert("Ocurrio un error con su saldo, por lo que fue reiniciado a 0");
+//Utilizacion de objetos de HTML
+let bienvenida = document.getElementById("welcome");
+let username = document.getElementById("username");
+let containerJuegos = document.getElementById("containerJuegos");
+let buscadorJuegos = document.getElementById("buscadorJuegos");
+let carritoFormat = document.getElementById("carritoFormat");
+let resetCarrito = document.getElementById("resetCarrito");
+
+// Inicio
+formatoJuego(listaJuegos);
+
+username.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let usuario = document.getElementById("usuario").value;
+    welcome.innerHTML = '<h2 class="userInput">Bienvenido, ' + usuario + '!</h2>';
+    nombreusuario = usuario;
+})
+
+buscadorJuegos.addEventListener('input', () => {
+    let busqueda = buscadorJuegos.value;
+    listaBuscada = listaJuegos.filter(juego => juego.nombre.toLowerCase().includes(busqueda.toLowerCase()));
+    containerJuegos.innerHTML = "";
+    formatoJuego(listaBuscada);
+})
+
+//agregar juegos al carrito
+listaJuegos.forEach(juego => {
+    document.getElementById(`btnprod${juego.id}`).addEventListener('click', () => {
+        agregarCarrito(juego);
+    });
+});
+
+carrito.forEach(juego => {
+    document.getElementById(`btnborrar${juego.id}`).addEventListener('click', () => {
+        carrito = carrito.filter(juegoCarrito => juegoCarrito.id !== juego.id);
+        document.getElementById(`juego${juego.id}`).remove();
+        console.log(carrito);
+    })
+})
+
+resetCarrito.addEventListener('click', () => {
+    carritoFormat.innerHTML = "";
+    carrito.length = 0;
+})
+
+//Funciones
+
+function formatoJuego(lista) {
+    lista.forEach(juego => {
+        containerJuegos.innerHTML += `<div class="card" id="juego${juego.id}" style="width: 18rem;">
+        <img src="https://random.imagecdn.app/500/150" class="card-img-top" alt="imagen de un juego">
+            <div class="card-body">
+                <h5 class="card-title">${juego.nombre}</h5>
+                <p class="card-text">Precio en total: USD$${juego.precio}</p>
+                <button id="btnprod${juego.id}" class="btn btn-primary">Agregar al carrito</button>
+            </div>
+        </div>`
+    });
+}
+
+function agregarCarrito(juego) {
+    console.log(carrito);
+    if (!(carrito.includes(juego))) {
+        carritoFormat.innerHTML += `<div id="carrito${juego.id}" class="row mb-4 d-flex justify-content-between align-items-center">
+                            <div class="col-md-2 col-lg-2 col-xl-2">
+                                <img src="https://random.imagecdn.app/500/150"
+                                    class="img-fluid rounded-3" alt="Juego${juego.id}">
+                            </div>
+                            <div class="col-md-3 col-lg-3 col-xl-3">
+                                <h6 class="text-muted">${juego.nombre}</h6>
+                            </div>
+                            <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                                <input id="form${juego.id}" min="0" name="quantity" value="${cantidadEnCarrito(juego)}" type="text"
+                                    class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                                <h6 class="mb-0">USD$${juego.precio}</h6>
+                            </div>
+                            <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+                                <button id="btnborrar${juego.id}" class="text-muted"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>`;
+        console.log(cantidadEnCarrito(juego))
     }
-    // 1.Para manejar el saldo
-    if (opcion == 1) {
-        let opcionS = 1;
-        while (opcionS > 0 || opcionS < 4) {
-            opcionS = parseInt(prompt("Usted eligio manejar su saldo, Ingrese el tipo de operacion que desea realizar\n" +
-                "1. Agregar credito\n2. Ver saldo actual\n3. Ver mi saldo en dolares\n4. Salir del menu Saldo"));
-            // 1. Agregar credito
-            if (opcionS == 1) {
-                saldo = masSaldo(saldo);
-                alert("Exito! Su saldo actual es de ARS$" + saldo);
-            }
-            // 2. Ver saldo actual
-            else if (opcionS == 2) {
-                alert("Su saldo actual es de ARS$" + saldo);
-            }
-            // 3. Ver mi saldo en dolares
-            else if (opcionS == 3) {
-                alert("Su saldo en dolares es de US$" + (saldo / cambioDolar));
-            }
-            // 4. Salir del menu Saldo
-            else if (opcionS == 4) {
-                alert("Volviendo al menu anterior...");
-                break;
-            }
-            // Verificacion de opcion de menu saldo
-            else {
-                alert("Ingrese una opcion valida!");
-            }
+    carrito.push(juego);
+}
+
+function cantidadEnCarrito(juego) {
+    if (document.getElementById(`form${juego.id}`) != null) {
+        if (carrito.filter(juegoCarrito => juegoCarrito.id === juego.id).length == undefined) {
+            document.getElementById(`form${juego.id}`).value = 1; 
+        } else {
+            document.getElementById(`form${juego.id}`).value = carrito.filter(juegoCarrito => juegoCarrito.id === juego.id).length;
         }
-        // 2.Para ver/comprar los juegos
-    } else if (opcion == 2) {
-        let opcionJ = 1;
-        let juego = 0;
-        let eleccion = 0;
-        while (opcionJ > 1 || opcionJ < 10) {
-            opcionJ = parseInt(prompt("Usted eligio pasar a comprar los juegos, Ingrese el tipo de operacion que desea realizar\n" +
-                "1. Elegir un juego de la lista de Juegos\n2. Agregar juego elegido al carrito\n3. Quitar ultimo juego del carrito\n4.Realizar mi compra\n5. Ver mi carrito\n6. Salir del menu de Juegos"));
-            // 1. Elegir un juego de la lista de Juegos
-            if (opcionJ == 1) {
-                let listajuegos = "";
-                for (const Juego of lista) {
-                    listajuegos += "Juego " + (lista.indexOf(Juego) + 1) + ": " + Juego.toString() + "\n";
-                }
-                juego = parseInt(prompt("Ingrese el nombre del juego que desea comprar\n" +
-                    listajuegos +
-                    "11. Salir sin comprar"));
-                while (juego < 1 || juego > 11 || isNaN(juego)) {
-                    juego = parseInt(prompt("ERROR! Ingrese el nombre del juego que desea comprar\n" +
-                        listajuegos +
-                        "11. Salir sin comprar"));
-                }
-                if (juego == 11) {
-                    alert("Volviendo al menu anterior...");
-                    break;
-                } else {
-                    if (lista[juego - 1] != undefined) {
-                        alert("Usted eligio: " + lista[juego - 1].nombre);
-                        eleccion = juego;
-                    }
-                };
-            }
-            // 2. Agregar juego elegido al carrito
-            else if (opcionJ == 2) {
-                if (eleccion != 0) {
-                    carrito.push(lista[juego - 1]);
-                    alert("Juego agregado al carrito!");
-                    eleccion = 0;
-                } else {
-                    alert("ERROR! Aun no eligio un juego para el carrito!");
-                }
-            }
-            // 3. Quitar ultimo juego del carrito
-            else if (opcionJ == 3) {
-                if (carrito.length > 0) {
-                    alert("Juego '" + carrito[carrito.length - 1].nombre + "' eliminado del carrito!");
-                    carrito.pop();
-                } else {
-                    alert("ERROR! No hay juegos en el carrito!");
-                }
-            }
-            // 4.Realizar mi compra
-            else if (opcionJ == 4) {
-                let totalC = 0;
-                for (const Juego of carrito) {
-                    totalC += Juego.precioImpuesto();
-                }
-                let seguro = confirm("Esta seguro que desea realizar su compra? Comprara: \n" +
-                    verCarrito(carrito) +
-                    "\nEl total sera de: ARS$" + totalC + "\nEl precio incluye impuestos");
-                if (seguro) {
-                    if (carrito.length > 0) {
-                        saldo = comprarJuegos(saldo, totalC, carrito);
-                    } else {
-                        alert("ERROR! No hay juegos en el carrito!");
-                    }
-                } else {
-                    alert("Compra cancelada!");
-                }
-            }
-            // 5. Ver mi carrito
-            else if (opcionJ == 5) {
-                alert("Su carrito actual es: \n" + verCarrito(carrito));
-            }
-            // 6. Salir del menu de Juegos
-            else if (opcionJ == 6) {
-                alert("Volviendo al menu anterior...");
-                break;
-            }
-            // Verificacion de opcion de menu de juegos
-            else {
-                alert("Opcion no valida")
-            }
-        }
-    }
-    // 3. Para salir del simulador
-    else if (opcion == 3) {
-        alert("Gracias por utilizar el simulador de tienda Steam, hasta la proxima!");
-        break;
-    }
-    // Verificacion de opcion de menu general
-    else {
-        alert("Opcion no valida")
     }
 }
 
-// Creacion de HTML del carrito
+//Arranque
+
+/* 
+Ingresar objetos a una lista traidos desde un form let objeto = {atrib1: valor, atrib2: valor2}
+array.push(objeto)
+reiniciar los campos de un form: form.reset();
+*/

@@ -1,23 +1,112 @@
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; }
 
-#carritoContainer {
-    width: 100%;
-    height: fit-content;
-    background-color: #f16b6b;
+body {
+  min-height: 100vh;
+  width: 100%;
+  background-color: rgba(169, 36, 36, 0.8);
+  background-image: url(../src/img/background.gif);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover; }
+  body header {
+    background-color: #7911e8;
+    height: 80px;
     display: flex;
-    flex-direction: column;
-    vertical-align: middle;
-}
-
-.itemCarrito {
-    width: 100%;
-    height: 150px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
+    justify-content: center; }
+    body header .headerContainer {
+      display: flex;
+      align-items: center;
+      width: 90%;
+      max-width: 1500px;
+      height: 100%; }
+      body header .headerContainer .logoContainer {
+        text-decoration: none;
+        color: black; }
+      body header .headerContainer nav {
+        height: 100%;
+        display: flex;
+        align-items: center; }
+        body header .headerContainer nav ul li .nav-link {
+          text-decoration: none;
+          color: black;
+          font-size: 1.2rem; }
+          body header .headerContainer nav ul li .nav-link:hover {
+            color: #3e0874; }
+  body main {
+    display: grid;
+    height: 3200px;
+    grid-template-columns: 1fr;
+    grid-template-rows: 800px 1fr 1fr;
+    grid-template-areas: "inicio" "juegos" "carrito";
+    gap: 20px; }
+    body main .bienvenida {
+      grid-area: inicio;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: auto;
+      height: 400px;
+      width: 80%;
+      background-color: white;
+      border-radius: 10%;
+      padding: 1%; }
+      body main .bienvenida form {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center; }
+        body main .bienvenida form .form-label {
+          font-size: 28px; }
+    body main #containerCompras {
+      grid-area: juegos;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: auto;
+      height: 100%;
+      width: 90%;
+      background-color: #fff;
+      padding: 5%; }
+      body main #containerCompras h2 {
+        margin-bottom: 20px; }
+      body main #containerCompras .has-search {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        position: relative;
+        margin-bottom: 50px; }
+        body main #containerCompras .has-search .form-control {
+          padding-right: 2.375rem; }
+        body main #containerCompras .has-search .form-control-feedback {
+          position: absolute;
+          z-index: 2;
+          display: block;
+          width: 2.375rem;
+          height: 2.375rem;
+          line-height: 2.375rem;
+          text-align: center;
+          pointer-events: none;
+          color: #aaa;
+          right: 0; }
+      body main #containerCompras #containerJuegos {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        flex-wrap: wrap; }
+        body main #containerCompras #containerJuegos .card {
+          margin: 10px; }
+    body main #containerCarrito {
+      grid-area: carrito;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: auto;
+      height: 95%;
+      width: 90%;
+      background-color: #fff;
+      padding: 5%; }
