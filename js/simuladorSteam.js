@@ -51,7 +51,9 @@ let totalContainer = document.getElementById("totalContainer");
 
 // Inicio
 formatoJuego(listaJuegos);
-leerCarrito();
+if (localStorage.getItem("carrito") != null) {
+    leerCarrito();
+}
 
 if (localStorage.getItem("usuario") == null) {
     username.innerHTML = `<div class="mb-3">
