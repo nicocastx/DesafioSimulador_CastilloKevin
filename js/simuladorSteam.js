@@ -51,10 +51,10 @@ let totalContainer = document.getElementById("totalContainer");
 
 // Inicio
 formatoJuego(listaJuegos);
+
 if (localStorage.getItem("carrito") != null) {
     leerCarrito();
 }
-
 if (localStorage.getItem("usuario") == null) {
     username.innerHTML = `<div class="mb-3">
     <label for="usuario" class="form-label">Ingrese su nombre de usuario</label>
@@ -62,14 +62,19 @@ if (localStorage.getItem("usuario") == null) {
 </div>
 <button type="submit" class="btn btn-primary">Saludame</button>`
 } else{
-    welcome.innerHTML = '<h2 class="userInput">Bienvenido, ' + localStorage.getItem("usuario") + '!</h2>';
-}
+    welcome.innerHTML = `<h2 class="userInput">Bienvenido, ${localStorage.getItem("usuario")} !</h2>
+                            <button id="logout" class="btn btn-primary">No soy yo</button>`;
+    cerrarSesion();
+    }
 
 username.addEventListener('submit', (e) => {
     e.preventDefault();
     let usuario = document.getElementById("usuario").value;
     localStorage.setItem("usuario", usuario);
-    welcome.innerHTML = '<h2 class="userInput">Bienvenido, ' + localStorage.getItem("usuario") + '!</h2>';
+    welcome.innerHTML = `<h2 class="userInput">Bienvenido, ${localStorage.getItem("usuario")} !</h2>
+                            <button id="logout" class="btn btn-primary">No soy yo</button>
+                            <p>AVISO: se le borrara todos los datos del carrito</p>`;
+    cerrarSesion();
 })
 
 buscadorJuegos.addEventListener('input', () => {
@@ -89,22 +94,8 @@ listaJuegos.forEach(juego => {
 });
 
 //borrar un juego del carrito
-function btnsborrar() {
-    carrito.forEach(juego => {
-        document.getElementById(`btnborrar${juego.id}`).addEventListener('click', () => {
-            carrito = carrito.filter(juegoCarrito => juegoCarrito.id != juego.id);
-            document.getElementById(`carrito${juego.id}`).remove();
-            localStorage.setItem("carrito", JSON.stringify(carrito));
-            actualizarTotal();
-        })
-    })
-}
-
 resetCarrito.addEventListener('click', () => {
-    carrito.length = 0;
-    localStorage.removeItem("carrito", JSON.stringify(carrito));
-    carritoFormat.innerHTML = "";
-    totalContainer.innerHTML = `<h3>Total a pagar:</h3>`
+    limpiarCarrito();
 })
 
 totalContainer.innerHTML = `<h3>Total a pagar:</h3>`
@@ -170,3 +161,30 @@ function leerCarrito(){
         })
         btnsborrar();
 }
+
+function btnsborrar() {
+    carrito.forEach(juego => {
+        document.getElementById(`btnborrar${juego.id}`).addEventListener('click', () => {
+            carrito = carrito.filter(juegoCarrito => juegoCarrito.id != juego.id);
+            document.getElementById(`carrito${juego.id}`).remove();
+            localStorage.setItem("carrito", JSON.stringify(carrito));
+            actualizarTotal();
+        })
+    })
+}
+
+function cerrarSesion(){
+    let logout = document.querySelector(`#logout`);
+    logout.addEventListener("click", () => {
+        localStorage.removeItem("usuario");
+        limpiarCarrito();
+        location.reload();
+    })
+}
+
+function limpiarCarrito(){
+    carrito.length = 0;
+    localStorage.removeItem("carrito", JSON.stringify(carrito));
+    carritoFormat.innerHTML = "";
+    totalContainer.innerHTML = `<h3>Total a pagar:</h3>`
+};
