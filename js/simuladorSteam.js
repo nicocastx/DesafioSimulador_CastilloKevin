@@ -63,8 +63,10 @@ if (localStorage.getItem("usuario") == null) {
 <button type="submit" class="btn btn-primary">Saludame</button>`
 } else{
     welcome.innerHTML = `<h2 class="userInput">Bienvenido, ${localStorage.getItem("usuario")} !</h2>
-                            <button id="logout" class="btn btn-primary">No soy yo</button>`;
+                            <button id="logout" class="btn btn-primary">No soy yo</button>
+                            <p>AVISO: se le borrara todos los datos del carrito</p>`;
     cerrarSesion();
+    Swal.fire('Session iniciada', `Bienvenido ${localStorage.getItem("usuario")}`, 'success');
     }
 
 username.addEventListener('submit', (e) => {
@@ -75,6 +77,7 @@ username.addEventListener('submit', (e) => {
                             <button id="logout" class="btn btn-primary">No soy yo</button>
                             <p>AVISO: se le borrara todos los datos del carrito</p>`;
     cerrarSesion();
+    Swal.fire('Session iniciada', `Bienvenido ${localStorage.getItem("usuario")}`, 'success');
 })
 
 buscadorJuegos.addEventListener('input', () => {
