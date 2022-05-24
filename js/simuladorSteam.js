@@ -35,7 +35,7 @@ let j11 = new Juego(11, "Total War: Warhammer 3", 22.0);
 let j12 = new Juego(12, "Mount and Blade: Bannerlord", 24.0);
 const listaJuegos = [j1, j2, j3, j4, j5, j6, j7, j8, j9, j10, j11, j12];
 let carrito = [];
-if(localStorage.getItem("carrito") != null){
+if (localStorage.getItem("carrito") != null) {
     carrito = JSON.parse(localStorage.getItem("carrito"));
 }
 
@@ -61,13 +61,13 @@ if (localStorage.getItem("usuario") == null) {
     <input type="text" class="form-control" id="usuario" aria-describedby="usernameHelp">
 </div>
 <button type="submit" class="btn btn-primary">Saludame</button>`
-} else{
+} else {
     welcome.innerHTML = `<h2 class="userInput">Bienvenido, ${localStorage.getItem("usuario")} !</h2>
                             <button id="logout" class="btn btn-primary">No soy yo</button>
                             <p>AVISO: se le borrara todos los datos del carrito</p>`;
     cerrarSesion();
     Swal.fire('Session iniciada', `Bienvenido ${localStorage.getItem("usuario")}`, 'success');
-    }
+}
 
 username.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -124,12 +124,41 @@ function agregarCarrito(juego) {
         carrito.push(juego);
         localStorage.setItem("carrito", JSON.stringify(carrito));
         leerCarrito();
+        Toastify({
+            text: "Producto agregado al carrito",
+            duration: 3000,
+            destination: "https://github.com/apvarun/toastify-js",
+            newWindow: true,
+            close: false,
+            avatar:`../src/img/check.png`,
+            gravity: "top", // `top` or `bottom`
+            position: "left", // `left`, `center` or `right`
+            stopOnFocus: true, // Prevents dismissing of toast on hover
+            style: {
+                background: "linear-gradient(to left, #00b09b, #96c93d)",
+            },
+            onClick: function () {} // Callback after click
+        }).showToast();
     } else {
-        alert("El juego ya esta en el carrito");
+        Toastify({
+            text: "El producto ya esta en el carrito",
+            duration: 3000,
+            destination: "https://github.com/apvarun/toastify-js",
+            newWindow: true,
+            close: false,
+            avatar: `../src/img/error.png`,
+            gravity: "top", // `top` or `bottom`
+            position: "left", // `left`, `center` or `right`
+            stopOnFocus: true, // Prevents dismissing of toast on hover
+            style: {
+                background: "linear-gradient(to right, #ee0979, #ff6a00)",
+            },
+            onClick: function () {} // Callback after click
+        }).showToast();;
     }
 }
 
-function actualizarTotal(){
+function actualizarTotal() {
     let total = 0;
 
     JSON.parse(localStorage.getItem("carrito")).forEach(juego => {
@@ -143,10 +172,10 @@ function actualizarTotal(){
     totalContainer.innerHTML += `<h4>Total en pesos con impuesto: ARG$${totalImpuesto}</h4>`
 };
 
-function leerCarrito(){
+function leerCarrito() {
     carritoFormat.innerHTML = "";
-        JSON.parse(localStorage.getItem("carrito")).forEach(juego => {
-            carritoFormat.innerHTML += `<div id="carrito${juego.id}" class="row mb-4 d-flex justify-content-between align-items-center">
+    JSON.parse(localStorage.getItem("carrito")).forEach(juego => {
+        carritoFormat.innerHTML += `<div id="carrito${juego.id}" class="row mb-4 d-flex justify-content-between align-items-center">
                                     <div class="col-md-2 col-lg-2 col-xl-2">
                                         <img src="https://random.imagecdn.app/500/150"
                                             class="img-fluid rounded-3" alt="Juego${juego.id}">
@@ -161,8 +190,8 @@ function leerCarrito(){
                                         <button id="btnborrar${juego.id}" class="text-muted"><i class="fas fa-times"></i></button>
                                     </div>
                                 </div>`;
-        })
-        btnsborrar();
+    })
+    btnsborrar();
 }
 
 function btnsborrar() {
@@ -176,7 +205,7 @@ function btnsborrar() {
     })
 }
 
-function cerrarSesion(){
+function cerrarSesion() {
     let logout = document.querySelector(`#logout`);
     logout.addEventListener("click", () => {
         localStorage.removeItem("usuario");
@@ -185,7 +214,7 @@ function cerrarSesion(){
     })
 }
 
-function limpiarCarrito(){
+function limpiarCarrito() {
     carrito.length = 0;
     localStorage.removeItem("carrito", JSON.stringify(carrito));
     carritoFormat.innerHTML = "";
