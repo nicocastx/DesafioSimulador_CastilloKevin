@@ -1,73 +1,73 @@
 [{
         "id": 1,
         "nombre": "Among Us",
-        "precio": 2.00,
-        "imagen": "./src/img/juegos/"
+        "precio": 4.99,
+        "imagen": "../src/img/juegos/amogus.jpg"
     },
     {
         "id": 2,
         "nombre": "ARK: Survival Evolved",
-        "precio": 2.00,
-        "imagen": "./src/img/juegos/"
+        "precio": 29.99,
+        "imagen": "./src/img/juegos/ark.jpg"
     },
     {
         "id": 3,
         "nombre": "Wallpaper Engine",
-        "precio": 2.00,
-        "imagen": "./src/img/juegos/"
+        "precio": 3.99,
+        "imagen": "./src/img/juegos/walleng.jpg"
     },
     {
         "id": 4,
         "nombre": "Borderlands 2",
-        "precio": 2.00,
-        "imagen": "./src/img/juegos/"
+        "precio": 4.99,
+        "imagen": "./src/img/juegos/bl2.jpg"
     },
     {
         "id": 5,
         "nombre": "Dont Starve Together",
-        "precio": 2.00,
-        "imagen": "./src/img/juegos/"
+        "precio": 14.99,
+        "imagen": "./src/img/juegos/dst.jpg"
     },
     {
         "id": 6,
         "nombre": "Cities: Skyline",
-        "precio": 2.00,
-        "imagen": "./src/img/juegos/"
+        "precio": 29.99,
+        "imagen": "./src/img/juegos/cskylines.jpg"
     },
     {
         "id": 7,
         "nombre": "Civilization: VI",
-        "precio": 2.00,
-        "imagen": "./src/img/juegos/"
+        "precio": 59.99,
+        "imagen": "./src/img/juegos/civ6.jpg"
     },
     {
         "id": 8,
         "nombre": "Human Fall Flat",
-        "precio": 2.00,
-        "imagen": "./src/img/juegos/"
+        "precio": 6.79,
+        "imagen": "./src/img/juegos/hff.jpg"
     },
     {
         "id": 9,
         "nombre": "Sekiro: Shadows Die Twice",
-        "precio": 2.00,
-        "imagen": "./src/img/juegos/"
+        "precio": 59.99,
+        "imagen": "./src/img/juegos/ssdt.jpg"
     },
     {
         "id": 10,
         "nombre": "Bioshock: Infinite",
-        "precio": 2.00,
-        "imagen": "./src/img/juegos/"
+        "precio": 22.49,
+        "imagen": "./src/img/juegos/bioinf.jpg"
     },
     {
         "id": 11,
         "nombre": "Total War: Warhammer 3",
-        "precio": 2.00,
-        "imagen": "./src/img/juegos/"
+        "precio": 59.99,
+        "imagen": "./src/img/juegos/wh3.jpg"
     },
     {
         "id": 12,
         "nombre": "Mount and blade: Bannerlord",
-        "precio": 2.00,
-        "imagen": "./src/img/juegos/"
+        "precio": 49.99,
+        "imagen": "./src/img/juegos/bannerlord.jpg"
     }
 ]

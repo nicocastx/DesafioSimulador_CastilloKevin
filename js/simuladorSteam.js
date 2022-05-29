@@ -1,44 +1,32 @@
 //Inicializacion de variables
-let opcion = 1;
-const cambioDolar = 200;
 const impuestaso = 1.69;
 let saldo = 0.0;
 let nroOrden = 0;
 
-//creacion de clases
-class Juego {
-    constructor(id, nombre, precio) {
-        this.id = id;
-        this.nombre = nombre;
-        this.precio = precio;
-    };
-    precioPesos() {
-        return this.precio * cambioDolar;
-    }
-    precioImpuesto() {
-        return this.precioPesos() * impuestaso;
-    }
-}
-
-//Solicitud de JSON local
+//Solicitud de JSON local para los juegos
 fetch("../src/json/juegos.json")
-.then(response => response.json())
-.then(juegos => {formatoJuego(juegos);})
+    .then(response => response.json())
+    .then(juegos => {
+        formatoJuego(juegos);
+        haySesionIniciada(juegos);
+        buscadorJuegos.addEventListener('input', () => {
+            let busqueda = buscadorJuegos.value;
+            listaBuscada = juegos.filter(juego => juego.nombre.toLowerCase().includes(busqueda.toLowerCase()));
+            containerJuegos.innerHTML = "";
+            formatoJuego(listaBuscada);
+            haySesionIniciada(listaBuscada);
+        });
+        juegos.forEach(juego => {
+            document.getElementById(`btnprod${juego.id}`).addEventListener('click', (e) => {
+                e.preventDefault();
+                agregarCarrito(juego);
+                haySesionIniciada(juegos);
+                actualizarTotal()
+            });
+        });
 
-// Creacion de objetos
-// let j1 = new Juego(1, "Among Us", 2.00);
-// let j2 = new Juego(2, "ARK", 4.00);
-// let j3 = new Juego(3, "Wallpaper Engine", 6.00);
-// let j4 = new Juego(4, "Borderlands 2", 8.00);
-// let j5 = new Juego(5, "Dont Starve: Together", 10.00);
-// let j6 = new Juego(6, "Cities: Skyline", 12.0);
-// let j7 = new Juego(7, "Civilization: VI", 14.0);
-// let j8 = new Juego(8, "Human Fall Flat", 16.0);
-// let j9 = new Juego(9, "Sekiro: Shadow Die Twice", 18.0);
-// let j10 = new Juego(10, "Bioshock Infinite", 20.0);
-// let j11 = new Juego(11, "Total War: Warhammer 3", 22.0);
-// let j12 = new Juego(12, "Mount and Blade: Bannerlord", 24.0);
-// const listaJuegos = [j1, j2, j3, j4, j5, j6, j7, j8, j9, j10, j11, j12];
+    })
+
 let carrito = [];
 if (localStorage.getItem("carrito") != null) {
     carrito = JSON.parse(localStorage.getItem("carrito"));
@@ -57,8 +45,6 @@ let totalContainer = document.getElementById("totalContainer");
 
 // Inicio
 
-formatoJuego(listaJuegos);
-
 if (localStorage.getItem("carrito") != null) {
     leerCarrito();
 }
@@ -68,7 +54,8 @@ if (localStorage.getItem("usuario") == null) {
     <label for="usuario" class="form-label">Ingrese su nombre de usuario</label>
     <input type="text" class="form-control" id="usuario" aria-describedby="usernameHelp">
 </div>
-<button type="submit" class="btn btn-primary">Saludame</button>`
+<button type="submit" class="btn btn-primary">Iniciar Sesion</button>
+<h4>AVISO: no podra comprar hasta que inicie sesion</h4>`
 } else {
     welcome.innerHTML = `<h2 class="userInput">Bienvenido, ${localStorage.getItem("usuario")} !</h2>
                             <button id="logout" class="btn btn-primary">No soy yo</button>
@@ -78,11 +65,16 @@ if (localStorage.getItem("usuario") == null) {
 }
 
 // Total en blanco
-totalContainer.innerHTML = `<h3>Total a pagar:</h3>`
+if (localStorage.getItem("carrito") == null || localStorage.getItem("carrito") == []) {
+    totalContainer.innerHTML = `<h3>Total a pagar:</h3>`
+} else {
+    actualizarTotal();
+}
 
 //Eventos
 
 username.addEventListener('submit', (e) => {
+    location.reload();
     e.preventDefault();
     let usuario = document.getElementById("usuario").value;
     localStorage.setItem("usuario", usuario);
@@ -93,55 +85,44 @@ username.addEventListener('submit', (e) => {
     Swal.fire('Session iniciada', `Bienvenido ${localStorage.getItem("usuario")}`, 'success');
 })
 
-buscadorJuegos.addEventListener('input', () => {
-    let busqueda = buscadorJuegos.value;
-    listaBuscada = listaJuegos.filter(juego => juego.nombre.toLowerCase().includes(busqueda.toLowerCase()));
-    containerJuegos.innerHTML = "";
-    formatoJuego(listaBuscada);
-})
-
-//agregar juegos al carrito
-listaJuegos.forEach(juego => {
-    document.getElementById(`btnprod${juego.id}`).addEventListener('click', (e) => {
-        e.preventDefault();
-        agregarCarrito(juego);
-        actualizarTotal()
-    });
-});
-
 //borrar un juego del carrito
 resetCarrito.addEventListener('click', () => {
-    limpiarCarrito();
-})
-
-//confirmar compra de carrito
-confirmCompra.addEventListener('click', () => {
-    Swal.fire({
-        title: '¿Esta seguro de realizar la compra?',
-        text: "No podrá volver atras!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Si, realizar la compra!'
-    }).then((result) => {
-        if (result.value) {
-            Swal.fire(
-                'Compra realizada!',
-                'Gracias por su compra',
-                'success'
-            )
-            limpiarCarrito();
-        }
+        limpiarCarrito();
     })
-});
+
+    -
+    //confirmar compra de carrito
+    confirmCompra.addEventListener('click', () => {
+        if (localStorage.getItem("carrito") != null && localStorage.getItem("carrito") != []) {
+            Swal.fire({
+                title: '¿Esta seguro de realizar la compra?',
+                text: "No podrá volver atras!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, realizar la compra!'
+            }).then((result) => {
+                if (result.value) {
+                    Swal.fire(
+                        'Compra realizada!',
+                        'Gracias por su compra',
+                        'success'
+                    )
+                    limpiarCarrito();
+                }
+            })
+        } else{
+            Swal.fire('Error', 'No hay juegos en el carrito', 'error');
+        }
+    });
 
 //Funciones
 
 function formatoJuego(lista) {
     lista.forEach(juego => {
         containerJuegos.innerHTML += `<div class="card" id="juego${juego.id}" style="width: 18rem;">
-        <img src="https://random.imagecdn.app/500/150" class="card-img-top" alt="imagen de un juego">
+        <img src="${juego.imagen}" class="card-img-top" alt="imagen de un juego">
             <div class="card-body">
                 <h5 class="card-title">${juego.nombre}</h5>
                 <p class="card-text">Precio en total: USD$${juego.precio}</p>
@@ -162,7 +143,7 @@ function agregarCarrito(juego) {
             destination: "https://github.com/apvarun/toastify-js",
             newWindow: true,
             close: false,
-            avatar:`../src/img/check.png`,
+            avatar: `../src/img/check.png`,
             gravity: "top", // `top` or `bottom`
             position: "left", // `left`, `center` or `right`
             stopOnFocus: true, // Prevents dismissing of toast on hover
@@ -192,16 +173,20 @@ function agregarCarrito(juego) {
 
 function actualizarTotal() {
     let total = 0;
-
     JSON.parse(localStorage.getItem("carrito")).forEach(juego => {
         total += juego.precio;
     });
-    let totalPesos = total * 200;
-    let totalImpuesto = totalPesos * impuestaso;
-    totalContainer.innerHTML = `<h3>Total a pagar:</h3>`
-    totalContainer.innerHTML += `<h4>Total en dolares: USD$${total}</h4>`
-    totalContainer.innerHTML += `<h4>Total en pesos: ARG$${totalPesos}</h4>`
-    totalContainer.innerHTML += `<h4>Total en pesos con impuesto: ARG$${totalImpuesto}</h4>`
+    fetch("https://criptoya.com/api/dolar")
+        .then(response => response.json())
+        .then(dolar => {
+            let totalPesos = total * dolar.blue;
+            let totalImpuesto = totalPesos * impuestaso;
+            totalContainer.innerHTML = `<h3>Total a pagar:</h3>`
+            totalContainer.innerHTML += `<h4>Total en dolares: USD$${total}</h4>`
+            totalContainer.innerHTML += `<h4>Total en pesos: ARG$${totalPesos.toFixed(2)}</h4>`
+            totalContainer.innerHTML += `<h4>Total en pesos con impuesto: ARG$${totalImpuesto.toFixed(2)}</h4>`
+        })
+
 };
 
 function leerCarrito() {
@@ -209,7 +194,7 @@ function leerCarrito() {
     JSON.parse(localStorage.getItem("carrito")).forEach(juego => {
         carritoFormat.innerHTML += `<div id="carrito${juego.id}" class="row mb-4 d-flex justify-content-between align-items-center">
                                     <div class="col-md-2 col-lg-2 col-xl-2">
-                                        <img src="https://random.imagecdn.app/500/150"
+                                        <img src="${juego.imagen}"
                                             class="img-fluid rounded-3" alt="Juego${juego.id}">
                                     </div>
                                     <div class="col-md-3 col-lg-3 col-xl-3">
@@ -251,4 +236,16 @@ function limpiarCarrito() {
     localStorage.removeItem("carrito", JSON.stringify(carrito));
     carritoFormat.innerHTML = "";
     totalContainer.innerHTML = `<h3>Total a pagar:</h3>`
+};
+
+function haySesionIniciada(juegos) {
+    if (localStorage.getItem("usuario") == null) {
+        juegos.forEach(juego => {
+            document.getElementById(`btnprod${juego.id}`).disabled = true;
+        })
+    } else {
+        juegos.forEach(juego => {
+            document.getElementById(`btnprod${juego.id}`).disabled = false;
+        })
+    }
 };
