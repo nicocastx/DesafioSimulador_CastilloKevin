@@ -4,7 +4,7 @@ let saldo = 0.0;
 let nroOrden = 0;
 
 //Solicitud de JSON local para los juegos
-fetch("../src/json/juegos.json")
+fetch("./../src/json/juegos.json")
     .then(response => response.json())
     .then(juegos => {
         formatoJuego(juegos);
