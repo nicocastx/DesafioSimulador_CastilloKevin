@@ -93,7 +93,7 @@ resetCarrito.addEventListener('click', () => {
     -
     //confirmar compra de carrito
     confirmCompra.addEventListener('click', () => {
-        if (localStorage.getItem("carrito") != null && localStorage.getItem("carrito") != []) {
+        if (localStorage.getItem("carrito") != null) {
             Swal.fire({
                 title: '¿Esta seguro de realizar la compra?',
                 text: "No podrá volver atras!",
@@ -112,8 +112,6 @@ resetCarrito.addEventListener('click', () => {
                     limpiarCarrito();
                 }
             })
-        } else{
-            Swal.fire('Error', 'No hay juegos en el carrito', 'error');
         }
     });
 
@@ -143,7 +141,7 @@ function agregarCarrito(juego) {
             destination: "https://github.com/apvarun/toastify-js",
             newWindow: true,
             close: false,
-            avatar: `../src/img/check.png`,
+            avatar: `./src/img/check.png`,
             gravity: "top", // `top` or `bottom`
             position: "left", // `left`, `center` or `right`
             stopOnFocus: true, // Prevents dismissing of toast on hover
@@ -159,7 +157,7 @@ function agregarCarrito(juego) {
             destination: "https://github.com/apvarun/toastify-js",
             newWindow: true,
             close: false,
-            avatar: `../src/img/error.png`,
+            avatar: `./src/img/error.png`,
             gravity: "top", // `top` or `bottom`
             position: "left", // `left`, `center` or `right`
             stopOnFocus: true, // Prevents dismissing of toast on hover
