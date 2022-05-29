@@ -20,20 +20,25 @@ class Juego {
     }
 }
 
+//Solicitud de JSON local
+fetch("../src/json/juegos.json")
+.then(response => response.json())
+.then(juegos => {formatoJuego(juegos);})
+
 // Creacion de objetos
-let j1 = new Juego(1, "Among Us", 2.00);
-let j2 = new Juego(2, "ARK", 4.00);
-let j3 = new Juego(3, "Wallpaper Engine", 6.00);
-let j4 = new Juego(4, "Borderlands 2", 8.00);
-let j5 = new Juego(5, "Dont Starve: Together", 10.00);
-let j6 = new Juego(6, "Cities: Skyline", 12.0);
-let j7 = new Juego(7, "Civilization: VI", 14.0);
-let j8 = new Juego(8, "Human Fall Flat", 16.0);
-let j9 = new Juego(9, "Sekiro: Shadow Die Twice", 18.0);
-let j10 = new Juego(10, "Bioshock Infinite", 20.0);
-let j11 = new Juego(11, "Total War: Warhammer 3", 22.0);
-let j12 = new Juego(12, "Mount and Blade: Bannerlord", 24.0);
-const listaJuegos = [j1, j2, j3, j4, j5, j6, j7, j8, j9, j10, j11, j12];
+// let j1 = new Juego(1, "Among Us", 2.00);
+// let j2 = new Juego(2, "ARK", 4.00);
+// let j3 = new Juego(3, "Wallpaper Engine", 6.00);
+// let j4 = new Juego(4, "Borderlands 2", 8.00);
+// let j5 = new Juego(5, "Dont Starve: Together", 10.00);
+// let j6 = new Juego(6, "Cities: Skyline", 12.0);
+// let j7 = new Juego(7, "Civilization: VI", 14.0);
+// let j8 = new Juego(8, "Human Fall Flat", 16.0);
+// let j9 = new Juego(9, "Sekiro: Shadow Die Twice", 18.0);
+// let j10 = new Juego(10, "Bioshock Infinite", 20.0);
+// let j11 = new Juego(11, "Total War: Warhammer 3", 22.0);
+// let j12 = new Juego(12, "Mount and Blade: Bannerlord", 24.0);
+// const listaJuegos = [j1, j2, j3, j4, j5, j6, j7, j8, j9, j10, j11, j12];
 let carrito = [];
 if (localStorage.getItem("carrito") != null) {
     carrito = JSON.parse(localStorage.getItem("carrito"));
@@ -47,14 +52,17 @@ let containerJuegos = document.getElementById("containerJuegos");
 let buscadorJuegos = document.getElementById("buscadorJuegos");
 let carritoFormat = document.getElementById("carritoFormat");
 let resetCarrito = document.getElementById("resetCarrito");
+let confirmCompra = document.querySelector(`#comprarCarrito`);
 let totalContainer = document.getElementById("totalContainer");
 
 // Inicio
+
 formatoJuego(listaJuegos);
 
 if (localStorage.getItem("carrito") != null) {
     leerCarrito();
 }
+
 if (localStorage.getItem("usuario") == null) {
     username.innerHTML = `<div class="mb-3">
     <label for="usuario" class="form-label">Ingrese su nombre de usuario</label>
@@ -68,6 +76,11 @@ if (localStorage.getItem("usuario") == null) {
     cerrarSesion();
     Swal.fire('Session iniciada', `Bienvenido ${localStorage.getItem("usuario")}`, 'success');
 }
+
+// Total en blanco
+totalContainer.innerHTML = `<h3>Total a pagar:</h3>`
+
+//Eventos
 
 username.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -101,8 +114,27 @@ resetCarrito.addEventListener('click', () => {
     limpiarCarrito();
 })
 
-totalContainer.innerHTML = `<h3>Total a pagar:</h3>`
-
+//confirmar compra de carrito
+confirmCompra.addEventListener('click', () => {
+    Swal.fire({
+        title: '¿Esta seguro de realizar la compra?',
+        text: "No podrá volver atras!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, realizar la compra!'
+    }).then((result) => {
+        if (result.value) {
+            Swal.fire(
+                'Compra realizada!',
+                'Gracias por su compra',
+                'success'
+            )
+            limpiarCarrito();
+        }
+    })
+});
 
 //Funciones
 
