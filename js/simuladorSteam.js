@@ -112,6 +112,8 @@ resetCarrito.addEventListener('click', () => {
                     limpiarCarrito();
                 }
             })
+        } else{
+            Swal.fire('No hay productos en el carrito', '', 'warning')
         }
     });
 
