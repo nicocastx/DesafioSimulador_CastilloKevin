@@ -1,7 +1,20 @@
 //Inicializacion de variables
 const impuestaso = 1.69;
-let saldo = 0.0;
-let nroOrden = 0;
+
+//Utilizacion de objetos de HTML
+let bienvenida = document.getElementById("welcome");
+let username = document.getElementById("username");
+let containerJuegos = document.getElementById("containerJuegos");
+let buscadorJuegos = document.getElementById("buscadorJuegos");
+let carritoFormat = document.getElementById("carritoFormat");
+let resetCarrito = document.getElementById("resetCarrito");
+let confirmCompra = document.querySelector(`#comprarCarrito`);
+let totalContainer = document.getElementById("totalContainer");
+
+let carrito = [];
+if (localStorage.getItem("carrito") != null) {
+    carrito = JSON.parse(localStorage.getItem("carrito"));
+}
 
 //Solicitud de JSON local para los juegos
 fetch("./src/json/juegos.json")
@@ -15,33 +28,16 @@ fetch("./src/json/juegos.json")
             containerJuegos.innerHTML = "";
             formatoJuego(listaBuscada);
             haySesionIniciada(listaBuscada);
-        });
-        juegos.forEach(juego => {
-            document.getElementById(`btnprod${juego.id}`).addEventListener('click', (e) => {
-                e.preventDefault();
-                agregarCarrito(juego);
-                haySesionIniciada(juegos);
-                actualizarTotal()
+            listaBuscada.forEach(juego => {
+                funcionAgregarBtn(juego)
+                haySesionIniciada(listaBuscada);
             });
         });
-
+        juegos.forEach(juego => {
+            funcionAgregarBtn(juego);
+            haySesionIniciada(juegos);
+        });
     })
-
-let carrito = [];
-if (localStorage.getItem("carrito") != null) {
-    carrito = JSON.parse(localStorage.getItem("carrito"));
-}
-
-
-//Utilizacion de objetos de HTML
-let bienvenida = document.getElementById("welcome");
-let username = document.getElementById("username");
-let containerJuegos = document.getElementById("containerJuegos");
-let buscadorJuegos = document.getElementById("buscadorJuegos");
-let carritoFormat = document.getElementById("carritoFormat");
-let resetCarrito = document.getElementById("resetCarrito");
-let confirmCompra = document.querySelector(`#comprarCarrito`);
-let totalContainer = document.getElementById("totalContainer");
 
 // Inicio
 
@@ -112,12 +108,21 @@ resetCarrito.addEventListener('click', () => {
                     limpiarCarrito();
                 }
             })
-        } else{
+        } else {
             Swal.fire('No hay productos en el carrito', '', 'warning')
         }
     });
 
 //Funciones
+
+function funcionAgregarBtn(juego){
+document.getElementById(`btnprod${juego.id}`).addEventListener('click', (e) => {
+    e.preventDefault();
+    agregarCarrito(juego);
+    actualizarTotal();
+    });
+}
+
 
 function formatoJuego(lista) {
     lista.forEach(juego => {
@@ -133,14 +138,23 @@ function formatoJuego(lista) {
 }
 
 function agregarCarrito(juego) {
-    if (!(carrito.includes(juego))) {
-        carrito.push(juego);
-        localStorage.setItem("carrito", JSON.stringify(carrito));
-        leerCarrito();
+    const existe = carrito.some((juegoEncarrito) => juegoEncarrito.id === juego.id);
+    const JuegoAlCarrito = {
+        ...juego,
+        cantidad: 1
+    };
+    comprobarExistencia(existe, JuegoAlCarrito, juego);
+}
+
+function comprobarExistencia(existe, JuegoAlCarrito, juego) {
+    if (existe) {
+        agregarAlCarrito(juego);
+    } else {
+        carrito.push(JuegoAlCarrito);
+        actualizarCarrito();
         Toastify({
             text: "Producto agregado al carrito",
             duration: 3000,
-            destination: "https://github.com/apvarun/toastify-js",
             newWindow: true,
             close: false,
             avatar: `./src/img/check.png`,
@@ -152,29 +166,40 @@ function agregarCarrito(juego) {
             },
             onClick: function () {} // Callback after click
         }).showToast();
-    } else {
-        Toastify({
-            text: "El producto ya esta en el carrito",
-            duration: 3000,
-            destination: "https://github.com/apvarun/toastify-js",
-            newWindow: true,
-            close: false,
-            avatar: `./src/img/error.png`,
-            gravity: "top", // `top` or `bottom`
-            position: "left", // `left`, `center` or `right`
-            stopOnFocus: true, // Prevents dismissing of toast on hover
-            style: {
-                background: "linear-gradient(to right, #ee0979, #ff6a00)",
-            },
-            onClick: function () {} // Callback after click
-        }).showToast();;
     }
-}
+};
+
+function actualizarCarrito() {
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+        leerCarrito();
+};
+
+function agregarAlCarrito(juego) {
+    carrito.map((JuegoEnCarrito) => {
+        if (JuegoEnCarrito.id === juego.id) {
+            JuegoEnCarrito.cantidad++;
+            actualizarCarrito();
+            Toastify({
+                text: "Nueva cantidad en el carrito 😄",
+                duration: 3000,
+                newWindow: true,
+                close: false,
+                gravity: "top", // `top` or `bottom`
+                position: "left", // `left`, `center` or `right`
+                stopOnFocus: true, // Prevents dismissing of toast on hover
+                style: {
+                    background: "linear-gradient(to left, #00b09b, #96c93d)",
+                },
+                onClick: function () {} // Callback after click
+            }).showToast();
+        }
+    })
+};
 
 function actualizarTotal() {
     let total = 0;
     JSON.parse(localStorage.getItem("carrito")).forEach(juego => {
-        total += juego.precio;
+        total += juego.cantidad * juego.precio;
     });
     fetch("https://criptoya.com/api/dolar")
         .then(response => response.json())
@@ -182,7 +207,7 @@ function actualizarTotal() {
             let totalPesos = total * dolar.blue;
             let totalImpuesto = totalPesos * impuestaso;
             totalContainer.innerHTML = `<h3>Total a pagar:</h3>`
-            totalContainer.innerHTML += `<h4>Total en dolares: USD$${total}</h4>`
+            totalContainer.innerHTML += `<h4>Total en dolares: USD$${total.toFixed(2)}</h4>`
             totalContainer.innerHTML += `<h4>Total en pesos: ARG$${totalPesos.toFixed(2)}</h4>`
             totalContainer.innerHTML += `<h4>Total en pesos con impuesto: ARG$${totalImpuesto.toFixed(2)}</h4>`
         })
@@ -203,12 +228,21 @@ function leerCarrito() {
                                     <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
                                         <h6 class="mb-0">USD$${juego.precio}</h6>
                                     </div>
+                                    <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                                        <h6 class="mb-0">Cantidad: ${juego.cantidad}</h6>
+                                    </div>
+                                    <div class="col-md-1 col-lg-1 col-xl-1 offset-lg-1">
+                                    <button id="btnmenos${juego.id}" class="text-muted"><i class="fas fa-minus"></i></button>
+                                    <button id="btnmas${juego.id}" class="text-muted"><i class="fas fa-plus"></i></button>
+                                    </div>
                                     <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                                         <button id="btnborrar${juego.id}" class="text-muted"><i class="fas fa-times"></i></button>
                                     </div>
                                 </div>`;
     })
+    btnsmas()
     btnsborrar();
+    btnsmenos();
 }
 
 function btnsborrar() {
@@ -218,8 +252,110 @@ function btnsborrar() {
             document.getElementById(`carrito${juego.id}`).remove();
             localStorage.setItem("carrito", JSON.stringify(carrito));
             actualizarTotal();
+            Toastify({
+                text: "Se borro el producto del carrito 😔",
+                duration: 3000,
+                newWindow: true,
+                close: false,
+                avatar: ``,
+                gravity: "top", // `top` or `bottom`
+                position: "left", // `left`, `center` or `right`
+                stopOnFocus: true, // Prevents dismissing of toast on hover
+                style: {
+                    background: "linear-gradient(to right, #ed213a, #93291e)",
+                },
+                onClick: function () {} // Callback after click
+            }).showToast();
         })
     })
+}
+
+
+function btnsmas() {
+    carrito.forEach(juego => {
+        document.getElementById(`btnmas${juego.id}`).addEventListener('click', () => {
+            carrito = aumentarcarrito(carrito, juego);
+            actualizarCarrito();
+            actualizarTotal();
+            Toastify({
+                text: "Aumentada cantidad en carrito 👆",
+                duration: 3000,
+                newWindow: true,
+                close: false,
+                gravity: "top", // `top` or `bottom`
+                position: "left", // `left`, `center` or `right`
+                stopOnFocus: true, // Prevents dismissing of toast on hover
+                style: {
+                    background: "linear-gradient(to left, #00b09b, #96c93d)",
+                },
+                onClick: function () {} // Callback after click
+            }).showToast();
+        })
+    })
+}
+
+function aumentarcarrito(carrito, juego){
+    carrito.map(juegoCarrito => {
+        if (juegoCarrito.id === juego.id) {
+            juegoCarrito.cantidad++;
+            return juegoCarrito;
+        }
+    })
+    return carrito;
+}
+
+function btnsmenos() {
+    carrito.forEach(juego => {
+        document.getElementById(`btnmenos${juego.id}`).addEventListener('click', () => {
+            carrito = descontarcarrito(carrito, juego);
+            actualizarCarrito();
+            actualizarTotal();
+        })
+    })
+}
+
+function descontarcarrito(carrito, juego){
+    carrito.map(juegoCarrito => {
+        if (juegoCarrito.id === juego.id) {
+            descontarJuegoCantidad(juegoCarrito);
+            return juegoCarrito;
+        }
+    })
+    return carrito;
+}
+
+function descontarJuegoCantidad(juegoCarrito){
+    if( juegoCarrito.cantidad > 1){
+        juegoCarrito.cantidad--;
+        Toastify({
+            text: "Producto descontado 👇",
+            duration: 3000,
+            newWindow: true,
+            close: false,
+            gravity: "top", // `top` or `bottom`
+            position: "left", // `left`, `center` or `right`
+            stopOnFocus: true, // Prevents dismissing of toast on hover
+            style: {
+                background: "linear-gradient(to right, #ed213a, #93291e)",
+            },
+            onClick: function () {} // Callback after click
+        }).showToast();
+        } else{
+            Toastify({
+                text: "Ya no se puede descontar, use la X para borrar",
+                duration: 3000,
+                newWindow: true,
+                close: false,
+                avatar: `./src/img/error.png`,
+                gravity: "top", // `top` or `bottom`
+                position: "left", // `left`, `center` or `right`
+                stopOnFocus: true, // Prevents dismissing of toast on hover
+                style: {
+                    background: "linear-gradient(to right, #ed213a, #93291e)",
+                },
+                onClick: function () {} // Callback after click
+            }).showToast();
+        }
 }
 
 function cerrarSesion() {
@@ -239,13 +375,9 @@ function limpiarCarrito() {
 };
 
 function haySesionIniciada(juegos) {
-    if (localStorage.getItem("usuario") == null) {
+    if (localStorage.getItem("usuario") == null || localStorage.getItem("usuario") == "") {
         juegos.forEach(juego => {
             document.getElementById(`btnprod${juego.id}`).disabled = true;
-        })
-    } else {
-        juegos.forEach(juego => {
-            document.getElementById(`btnprod${juego.id}`).disabled = false;
         })
     }
 };
