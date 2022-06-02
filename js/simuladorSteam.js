@@ -89,7 +89,9 @@ resetCarrito.addEventListener('click', () => {
     -
     //confirmar compra de carrito
     confirmCompra.addEventListener('click', () => {
-        if (localStorage.getItem("carrito") != null) {
+        if (localStorage.getItem("carrito") == null || carrito.length == 0) {
+            Swal.fire('No hay productos en el carrito', '', 'warning')
+        } else {
             Swal.fire({
                 title: '¿Esta seguro de realizar la compra?',
                 text: "No podrá volver atras!",
@@ -99,21 +101,23 @@ resetCarrito.addEventListener('click', () => {
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Si, realizar la compra!'
             }).then((result) => {
-                if (result.value) {
-                    Swal.fire(
-                        'Compra realizada!',
-                        'Gracias por su compra',
-                        'success'
-                    )
-                    limpiarCarrito();
-                }
+                confirmarCompra(result);
             })
-        } else {
-            Swal.fire('No hay productos en el carrito', '', 'warning')
         }
     });
 
 //Funciones
+
+function confirmarCompra(result){
+    if (result.value) {
+    Swal.fire(
+        'Compra realizada!',
+        'Gracias por su compra',
+        'success'
+    )
+    limpiarCarrito();
+    }
+};
 
 function funcionAgregarBtn(juego){
 document.getElementById(`btnprod${juego.id}`).addEventListener('click', (e) => {
