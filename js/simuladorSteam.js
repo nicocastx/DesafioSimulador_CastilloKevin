@@ -217,7 +217,7 @@ function actualizarTotal() {
 function leerCarrito() {
     carritoFormat.innerHTML = "";
     JSON.parse(localStorage.getItem("carrito")).forEach(juego => {
-        carritoFormat.innerHTML += `<div id="carrito${juego.id}" class="row mb-4 d-flex justify-content-between align-items-center">
+        carritoFormat.innerHTML += `<div id="carrito${juego.id}" class="itemCarrito row mb-4 d-flex justify-content-between align-items-center">
                                     <div class="col-md-2 col-lg-2 col-xl-2">
                                         <img src="${juego.imagen}"
                                             class="img-fluid rounded-3" alt="Juego${juego.id}">
