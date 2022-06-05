@@ -41,9 +41,7 @@ fetch("./src/json/juegos.json")
 
 // Inicio
 
-if (localStorage.getItem("carrito") != null) {
-    leerCarrito();
-}
+localStorage.getItem("carrito") != null ? leerCarrito() : null;
 
 if (localStorage.getItem("usuario") == null) {
     username.innerHTML = `<div class="mb-3">
@@ -85,7 +83,6 @@ username.addEventListener('submit', (e) => {
 resetCarrito.addEventListener('click', () => {
         limpiarCarrito();
     })
-
     -
     //confirmar compra de carrito
     confirmCompra.addEventListener('click', () => {
@@ -377,6 +374,14 @@ function limpiarCarrito() {
     carritoFormat.innerHTML = "";
     totalContainer.innerHTML = `<h3>Total a pagar:</h3>`
 };
+
+// function haySesionIniciada(juegos) {
+//     if (localStorage.getItem("usuario") == null || localStorage.getItem("usuario") == "") {
+//         juegos.forEach(juego => {
+//             document.getElementById(`btnprod${juego.id}`).disabled = true;
+//         })
+//     }
+// };
 
 function haySesionIniciada(juegos) {
     if (localStorage.getItem("usuario") == null || localStorage.getItem("usuario") == "") {
